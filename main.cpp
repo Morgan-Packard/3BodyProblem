@@ -1,35 +1,43 @@
 #include <iostream>
 #include <string>
 #include <math.h>
-#include <vector>
 
 class DoublelyLinkedListNode {
-    int *leftptr = nullptr, *rightptr = nullptr; // left
+        DoublelyLinkedListNode *leftptr = nullptr, *rightptr = nullptr; // left
     public:
-    void setLeftPtr (int*);
-    void setRightPtr (int*);
-    int* getLeftPtr () {return leftptr;};
-    int* getRightPtr () {return rightptr;};    
+        void setLeftPtr (DoublelyLinkedListNode*);
+        void setRightPtr (DoublelyLinkedListNode*);
+        DoublelyLinkedListNode* getLeftPtr () {return leftptr;};
+        DoublelyLinkedListNode* getRightPtr () {return rightptr;};    
 };
 
-void DoublelyLinkedListNode::setLeftPtr (int *inputPtr) {
+void DoublelyLinkedListNode::setLeftPtr (DoublelyLinkedListNode *inputPtr) {
     leftptr = inputPtr;
 }
 
-void DoublelyLinkedListNode::setRightPtr (int *inputPtr) {
+void DoublelyLinkedListNode::setRightPtr (DoublelyLinkedListNode *inputPtr) {
     rightptr = inputPtr;
 }
 
-class PointMass : DoublelyLinkedListNode{
+class PointMass : public DoublelyLinkedListNode{
         double x, y, vx, vy;
     public:
         void setValues (double, double, double, double);
-        // double getAcceleration (double, double, int, bool); //true = x false = y
+        void setLeftPtr (PointMass*);
+        void setRightPtr (PointMass*);        
         double getXValue () {return x;};
         double getYValue () {return y;};
         double getVXValue () {return vx;};
         double getVYValue () {return vy;};
 };
+
+void PointMass::setLeftPtr (PointMass *inputPtr) {
+    setLeftPtr(inputPtr);
+}
+
+void PointMass::setRightPtr (PointMass *inputPtr) {
+    setRightPtr(inputPtr);
+}
 
 void PointMass::setValues (double xin, double yin, double vxin, double vyin) {
     x = xin;
@@ -37,23 +45,6 @@ void PointMass::setValues (double xin, double yin, double vxin, double vyin) {
     vx = vxin;
     vy = vyin;
 }
-
-// double PointMass::getAcceleration (double xTotal, double yTotal, int numberOfBodies, bool xTrueYFalse) {
-//     double xComMinusX = (xTotal-x)/(numberOfBodies-1)-x;
-//     double yComMinusY = (yTotal-y)/(numberOfBodies-1)-y;
-//     double xyHypotenus = sqrt(xComMinusX*xComMinusX + yComMinusY*yComMinusY);
-//     double acc = (1)/(xComMinusX*xComMinusX + yComMinusY*yComMinusY);
-//     if (xTrueYFalse)
-//     {
-//         return (xComMinusX*acc/xyHypotenus);
-//     } else
-//     {
-//         return (yComMinusY*acc/xyHypotenus);
-//     }
-// }
-// each particle must affect individually. Then the acceleration will be summed.
-// 2D array of doubles? x, y, number of bodies, true false
-// 
 
 
 /*
@@ -65,48 +56,38 @@ int main(){
     double deltaT = 1;
     double endTime = 1000;
     int numberOfBodies = 3;
-    int *head = nullptr, *tail = nullptr;
-    
+
+    PointMass headMass;
+    headMass.PointMass::setValues(0, 0, 0, 0);
+    PointMass *trav = nullptr, *head = &headMass, *tail = &headMass;
+
     double x, y, vx, vy;
-    std::vector<PointMass> masses (numberOfBodies);
-    for (PointMass &body : masses)
-    {
-        std::cout << "Please enter the x position of body: ";
-        std::cin >> x;
-        std::cout << "Please enter the y position of body: ";
-        std::cin >> y;
-        std::cout << "Please enter the x velocity of body: ";
-        std::cin >> vx;
-        std::cout << "Please enter the y velocity of body: ";
-        std::cin >> vy;
-        
-        body.setValues(x, y, vx, vy);
+    for (int i = 0; i < numberOfBodies; i++){
+        trav = new PointMass;
+        trav->setLeftPtr(tail);
+        tail->setRightPtr(trav);
+        tail = trav;
+
+        std::cout << "Please input mass " << i << "'s x location, y location, x velocity, and y velocity." << std::endl;
+        std::cin >> x, y, vx, vy;
+        std::cout << std::endl;
+
+        trav->setValues(x, y, vx, vy);
     }
 
-    for (PointMass &body : masses)
+    trav = head;
+    double forceX, forceY;
+    while (trav != nullptr)
     {
-        std::cout << body.getXValue() << body.getYValue() << std::endl;
-
+        trav->PointMass::setRightPtr(tail);
+        std::cout << "trav right ptr set to Null" << std::endl;
+        trav = nullptr;
+        std::cout << "trav ptr set to nullptr" << std::endl;
     }
-
-    // for (int t = 0; t < endTime; t += deltaT)
-    // {
-    //     std::vector<double> xValues, yValues;
-    //     for (int i = 0; i < masses.size(); i++)
-    //     {
-    //         xValues.push_back(masses[i].getXValue());
-    //         yValues.push_back(masses[i].getYValue());
-    //     }
-    //     int *xValuesPtr, *yValuesPtr;
-    //     std::cout << std::to_string(t);
-    //     for (PointMass &body : masses) {
-    //         std::cout << "(" + std::to_string(body.getXValue()) + ", " + std::to_string(body.getYValue()) + ") ";
-    //         // body.setValues(
-    //         // body.getXValue() + body.getVXValue() * deltaT + 0.5*body.getAcceleration(x, y, numberOfBodies, true)*deltaT*deltaT,
-    //         // body.getYValue() + body.getVYValue() * deltaT + 0.5*body.getAcceleration(x, y, numberOfBodies, false)*deltaT*deltaT,
-    //         // body.getVXValue() + body.getAcceleration(x, y, numberOfBodies, true) * deltaT,
-    //         // body.getVYValue() + body.getAcceleration(x, y, numberOfBodies, false) * deltaT);
-    //     }
-    //     std::cout << std::endl;
-    // }
+    head = nullptr;
+    tail = nullptr;
+    free(trav);
+    free(head);
+    free(tail);
+    
 }
