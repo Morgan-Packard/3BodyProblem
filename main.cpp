@@ -3,15 +3,32 @@
 #include <math.h>
 #include <vector>
 
-class PointMass {
+class DoublelyLinkedListNode {
+    int *leftptr = nullptr, *rightptr = nullptr; // left
+    public:
+    void setLeftPtr (int*);
+    void setRightPtr (int*);
+    int* getLeftPtr () {return leftptr;};
+    int* getRightPtr () {return rightptr;};    
+};
+
+void DoublelyLinkedListNode::setLeftPtr (int *inputPtr) {
+    leftptr = inputPtr;
+}
+
+void DoublelyLinkedListNode::setRightPtr (int *inputPtr) {
+    rightptr = inputPtr;
+}
+
+class PointMass : DoublelyLinkedListNode{
         double x, y, vx, vy;
     public:
         void setValues (double, double, double, double);
         // double getAcceleration (double, double, int, bool); //true = x false = y
         double getXValue () {return x;};
         double getYValue () {return y;};
-        // double getVXValue () {return vx;};
-        // double getVYValue () {return vy;};
+        double getVXValue () {return vx;};
+        double getVYValue () {return vy;};
 };
 
 void PointMass::setValues (double xin, double yin, double vxin, double vyin) {
@@ -47,7 +64,8 @@ for each body, this equation must be summed for every other body F=GMm/r^2
 int main(){
     double deltaT = 1;
     double endTime = 1000;
-    int numberOfBodies = 3;    
+    int numberOfBodies = 3;
+    int *head = nullptr, *tail = nullptr;
     
     double x, y, vx, vy;
     std::vector<PointMass> masses (numberOfBodies);
