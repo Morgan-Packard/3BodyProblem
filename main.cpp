@@ -20,7 +20,7 @@ void DoublelyLinkedListNode::setRightPtr (DoublelyLinkedListNode *inputPtr) {
 }
 
 class PointMass : public DoublelyLinkedListNode{
-        double x, y, vx, vy;
+        double x, y, vx, vy, nextX, nextY, nextVX, nextVY;
     public:
         void setValues (double, double, double, double);
         void setLeftPtr (PointMass*);
@@ -52,6 +52,13 @@ n bodies
 for each body, this equation must be summed for every other body F=GMm/r^2
 */
 
+double forceX(DoublelyLinkedListNode *nodePtr, double forceSum, bool leftFalseRightTrue){
+    if (nodePtr->getLeftPtr() == nullptr){
+ 
+    }
+    return 0;
+}
+
 int main(){
     double deltaT = 1;
     double endTime = 1000;
@@ -79,6 +86,7 @@ int main(){
     double forceX, forceY;
     while (trav != nullptr)
     {
+
         trav->PointMass::setRightPtr(tail);
         std::cout << "trav right ptr set to Null" << std::endl;
         trav = nullptr;
