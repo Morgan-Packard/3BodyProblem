@@ -29,6 +29,8 @@ class PointMass : public DoublelyLinkedListNode{
         double getYValue () {return y;};
         double getVXValue () {return vx;};
         double getVYValue () {return vy;};
+        PointMass* getLeftPtr () {return getLeftPtr();};
+        PointMass* getRightPtr () {return getRightPtr();}; 
 };
 
 void PointMass::setLeftPtr (PointMass *inputPtr) {
@@ -52,11 +54,24 @@ n bodies
 for each body, this equation must be summed for every other body F=GMm/r^2
 */
 
-double forceX(DoublelyLinkedListNode *nodePtr, double forceSum, bool leftFalseRightTrue){
-    if (nodePtr->getLeftPtr() == nullptr){
- 
+double calculateForce(PointMass *nodePtr, PointMass *topTrav){
+    return 1/sqrt(pow((nodePtr->getXValue()-topTrav->getXValue()), 2) + pow((nodePtr->getYValue()-topTrav->getYValue()), 2));
+}
+
+double forceX(PointMass *nodePtr, bool leftFalseRightTrue, PointMass *topTrav){ 
+    if (leftFalseRightTrue){
+        if (nodePtr->getRightPtr() == nullptr){
+            return 0;
+        } else {
+            return (calculateForce(nodePtr, topTrav) + forceX(nodePtr->getRightPtr(), leftFalseRightTrue, topTrav));
+        }
+    } else {
+        if (nodePtr->getLeftPtr() == nullptr){
+            return 0;
+        } else {
+            return (calculateForce(nodePtr, topTrav) + forceX(nodePtr->getLeftPtr(), leftFalseRightTrue, topTrav));
+        }
     }
-    return 0;
 }
 
 int main(){
