@@ -2,6 +2,11 @@
 #include <string>
 #include <math.h>
 
+/*
+https://chatgpt.com/c/980c093b-84ca-4335-b7d0-bd6ad957c450
+interesting fixes, be sure to review later.
+*/
+
 class DoublelyLinkedListNode {
         DoublelyLinkedListNode *leftptr = nullptr, *rightptr = nullptr; // left
     public:
@@ -29,16 +34,16 @@ class PointMass : public DoublelyLinkedListNode{
         double getYValue () {return y;};
         double getVXValue () {return vx;};
         double getVYValue () {return vy;};
-        PointMass* getLeftPtr () {return getLeftPtr();};
-        PointMass* getRightPtr () {return getRightPtr();}; 
+        PointMass* getLeftPtr () {return (PointMass*) DoublelyLinkedListNode::getLeftPtr();}; //can cast data for doublylinkedlist pointer into a pointmass pointer
+        PointMass* getRightPtr () {return (PointMass*) DoublelyLinkedListNode::getRightPtr();}; 
 };
 
 void PointMass::setLeftPtr (PointMass *inputPtr) {
-    setLeftPtr(inputPtr);
+    DoublelyLinkedListNode::setLeftPtr(inputPtr);
 }
 
 void PointMass::setRightPtr (PointMass *inputPtr) {
-    setRightPtr(inputPtr);
+    DoublelyLinkedListNode::setRightPtr(inputPtr);
 }
 
 void PointMass::setValues (double xin, double yin, double vxin, double vyin) {
@@ -91,7 +96,7 @@ int main(){
         tail = trav;
 
         std::cout << "Please input mass " << i << "'s x location, y location, x velocity, and y velocity." << std::endl;
-        std::cin >> x, y, vx, vy;
+        std::cin >> x >> y >> vx >> vy;
         std::cout << std::endl;
 
         trav->setValues(x, y, vx, vy);
@@ -108,9 +113,5 @@ int main(){
         std::cout << "trav ptr set to nullptr" << std::endl;
     }
     head = nullptr;
-    tail = nullptr;
-    free(trav);
-    free(head);
-    free(tail);
-    
+    tail = nullptr;    
 }
