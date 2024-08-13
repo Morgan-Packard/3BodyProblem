@@ -59,8 +59,12 @@ n bodies
 for each body, this equation must be summed for every other body F=GMm/r^2
 */
 
-double calculateForce(PointMass *nodePtr, PointMass *topTrav){
-    return 1/sqrt(pow((nodePtr->getXValue()-topTrav->getXValue()), 2) + pow((nodePtr->getYValue()-topTrav->getYValue()), 2));
+double calculateForceX(PointMass *nodePtr, PointMass *topTrav){
+    return (nodePtr->getXValue()-topTrav->getXValue())/pow(pow((nodePtr->getXValue()-topTrav->getXValue()), 2) + pow((nodePtr->getYValue()-topTrav->getYValue()), 2), 2);
+}
+
+double calculateForceY(PointMass *nodePtr, PointMass *topTrav){
+    return (nodePtr->getYValue()-topTrav->getYValue())/pow(pow((nodePtr->getXValue()-topTrav->getXValue()), 2) + pow((nodePtr->getYValue()-topTrav->getYValue()), 2), 2);
 }
 
 double forceX(PointMass *nodePtr, bool leftFalseRightTrue, PointMass *topTrav){ 
@@ -68,13 +72,29 @@ double forceX(PointMass *nodePtr, bool leftFalseRightTrue, PointMass *topTrav){
         if (nodePtr->getRightPtr() == nullptr){
             return 0;
         } else {
-            return (calculateForce(nodePtr, topTrav) + forceX(nodePtr->getRightPtr(), leftFalseRightTrue, topTrav));
+            return (calculateForceX(nodePtr, topTrav) + forceX(nodePtr->getRightPtr(), leftFalseRightTrue, topTrav));
         }
     } else {
         if (nodePtr->getLeftPtr() == nullptr){
             return 0;
         } else {
-            return (calculateForce(nodePtr, topTrav) + forceX(nodePtr->getLeftPtr(), leftFalseRightTrue, topTrav));
+            return (calculateForceX(nodePtr, topTrav) + forceX(nodePtr->getLeftPtr(), leftFalseRightTrue, topTrav));
+        }
+    }
+}
+
+double forceY(PointMass *nodePtr, bool leftFalseRightTrue, PointMass *topTrav){ 
+    if (leftFalseRightTrue){
+        if (nodePtr->getRightPtr() == nullptr){
+            return 0;
+        } else {
+            return (calculateForceY(nodePtr, topTrav) + forceY(nodePtr->getRightPtr(), leftFalseRightTrue, topTrav));
+        }
+    } else {
+        if (nodePtr->getLeftPtr() == nullptr){
+            return 0;
+        } else {
+            return (calculateForceY(nodePtr, topTrav) + forceY(nodePtr->getLeftPtr(), leftFalseRightTrue, topTrav));
         }
     }
 }
@@ -106,12 +126,11 @@ int main(){
     double forceX, forceY;
     while (trav != nullptr)
     {
-
         trav->PointMass::setRightPtr(tail);
         std::cout << "trav right ptr set to Null" << std::endl;
         trav = nullptr;
         std::cout << "trav ptr set to nullptr" << std::endl;
     }
     head = nullptr;
-    tail = nullptr;    
+    tail = nullptr;
 }
