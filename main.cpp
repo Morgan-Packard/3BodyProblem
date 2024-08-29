@@ -25,15 +25,20 @@ void DoublelyLinkedListNode::setRightPtr (DoublelyLinkedListNode *inputPtr) {
 }
 
 class PointMass : public DoublelyLinkedListNode{
-        double x, y, vx, vy, nextX, nextY, nextVX, nextVY;
+        double pos_arr[3]; // x, y, z
+        double vel_arr[3]; // x, y, z
+        double force_arr[3]; // x, y, z
+
     public:
-        void setValues (double, double, double, double);
+        void setValues (double, double, double, double, double, double);
         void setLeftPtr (PointMass*);
-        void setRightPtr (PointMass*);        
-        double getXValue () {return x;};
-        double getYValue () {return y;};
-        double getVXValue () {return vx;};
-        double getVYValue () {return vy;};
+        void setRightPtr (PointMass*);
+        double getXValue () {return pos_arr[0];};
+        double getYValue () {return pos_arr[1];};
+        double getZValue () {return pos_arr[2];};
+        double getVXValue () {return vel_arr[0];};
+        double getVYValue () {return vel_arr[1];};
+        double getVZValue () {return vel_arr[2];};
         PointMass* getLeftPtr () {return (PointMass*) DoublelyLinkedListNode::getLeftPtr();}; //can cast data for doublylinkedlist pointer into a pointmass pointer
         PointMass* getRightPtr () {return (PointMass*) DoublelyLinkedListNode::getRightPtr();}; 
 };
@@ -46,11 +51,13 @@ void PointMass::setRightPtr (PointMass *inputPtr) {
     DoublelyLinkedListNode::setRightPtr(inputPtr);
 }
 
-void PointMass::setValues (double xin, double yin, double vxin, double vyin) {
-    x = xin;
-    y = yin;
-    vx = vxin;
-    vy = vyin;
+void PointMass::setValues (double xin, double yin, double zin, double vxin, double vyin, double vzin) {
+    pos_arr[0] = xin;
+    pos_arr[1] = yin;
+    pos_arr[2] = zin;
+    vel_arr[0] = vxin;
+    vel_arr[1] = vyin;
+    vel_arr[2] = vzin;
 }
 
 
@@ -58,6 +65,8 @@ void PointMass::setValues (double xin, double yin, double vxin, double vyin) {
 n bodies
 for each body, this equation must be summed for every other body F=GMm/r^2
 */
+
+
 
 double calculateForceX(PointMass *nodePtr, PointMass *topTrav){
     return (nodePtr->getXValue()-topTrav->getXValue())/pow(pow((nodePtr->getXValue()-topTrav->getXValue()), 2) + pow((nodePtr->getYValue()-topTrav->getYValue()), 2), 2);
@@ -105,21 +114,21 @@ int main(){
     int numberOfBodies = 3;
 
     PointMass headMass;
-    headMass.PointMass::setValues(0, 0, 0, 0);
+    headMass.PointMass::setValues(0, 0, 0, 0, 0, 0);
     PointMass *trav = nullptr, *head = &headMass, *tail = &headMass;
 
-    double x, y, vx, vy;
+    double x, y, z, vx, vy, vz;
     for (int i = 0; i < numberOfBodies; i++){
         trav = new PointMass;
         trav->setLeftPtr(tail);
         tail->setRightPtr(trav);
         tail = trav;
 
-        std::cout << "Please input mass " << i << "'s x location, y location, x velocity, and y velocity." << std::endl;
-        std::cin >> x >> y >> vx >> vy;
+        std::cout << "Please input mass " << i << "'s x location, y location, z location, x velocity, y velocity, and z velocity." << std::endl;
+        std::cin >> x >> y >> z >> vx >> vy >> vz;
         std::cout << std::endl;
 
-        trav->setValues(x, y, vx, vy);
+        trav->setValues(x, y, z, vx, vy, vz);
     }
 
     trav = head;
