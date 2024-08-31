@@ -1,4 +1,5 @@
 #include <iostream>
+#include <array>
 #include <string>
 #include <math.h>
 
@@ -28,7 +29,7 @@ class PointMass : public DoublelyLinkedListNode{
         double pos_arr[3]; // x, y, z
         double vel_arr[3]; // x, y, z
         double force_arr[3]; // x, y, z
-
+        double mass;
     public:
         void setValues (double, double, double, double, double, double);
         void setLeftPtr (PointMass*);
@@ -39,6 +40,7 @@ class PointMass : public DoublelyLinkedListNode{
         double getVXValue () {return vel_arr[0];};
         double getVYValue () {return vel_arr[1];};
         double getVZValue () {return vel_arr[2];};
+        double getMass () {return mass;};
         PointMass* getLeftPtr () {return (PointMass*) DoublelyLinkedListNode::getLeftPtr();}; //can cast data for doublylinkedlist pointer into a pointmass pointer
         PointMass* getRightPtr () {return (PointMass*) DoublelyLinkedListNode::getRightPtr();}; 
 };
@@ -60,60 +62,33 @@ void PointMass::setValues (double xin, double yin, double zin, double vxin, doub
     vel_arr[2] = vzin;
 }
 
-
-/*
-n bodies
-for each body, this equation must be summed for every other body F=GMm/r^2
-*/
-
-// double calculateForceX(PointMass *nodePtr, PointMass *topTrav){
-//     return (nodePtr->getXValue()-topTrav->getXValue())/pow(pow((nodePtr->getXValue()-topTrav->getXValue()), 2) + pow((nodePtr->getYValue()-topTrav->getYValue()), 2), 2);
-// }
-
-// double calculateForceY(PointMass *nodePtr, PointMass *topTrav){
-//     return (nodePtr->getYValue()-topTrav->getYValue())/pow(pow((nodePtr->getXValue()-topTrav->getXValue()), 2) + pow((nodePtr->getYValue()-topTrav->getYValue()), 2), 2);
-// }
-
-// double forceX(PointMass *nodePtr, bool leftFalseRightTrue, PointMass *topTrav){ 
-//     if (leftFalseRightTrue){
-//         if (nodePtr->getRightPtr() == nullptr){
-//             return 0;
-//         } else {
-//             return (calculateForceX(nodePtr, topTrav) + forceX(nodePtr->getRightPtr(), leftFalseRightTrue, topTrav));
-//         }
-//     } else {
-//         if (nodePtr->getLeftPtr() == nullptr){
-//             return 0;
-//         } else {
-//             return (calculateForceX(nodePtr, topTrav) + forceX(nodePtr->getLeftPtr(), leftFalseRightTrue, topTrav));
-//         }
-//     }
-// }
-
-// double forceY(PointMass *nodePtr, bool leftFalseRightTrue, PointMass *topTrav){ 
-//     if (leftFalseRightTrue){
-//         if (nodePtr->getRightPtr() == nullptr){
-//             return 0;
-//         } else {
-//             return (calculateForceY(nodePtr, topTrav) + forceY(nodePtr->getRightPtr(), leftFalseRightTrue, topTrav));
-//         }
-//     } else {
-//         if (nodePtr->getLeftPtr() == nullptr){
-//             return 0;
-//         } else {
-//             return (calculateForceY(nodePtr, topTrav) + forceY(nodePtr->getLeftPtr(), leftFalseRightTrue, topTrav));
-//         }
-//     }
-// }
-
-
-double ForceAonB(PointMass* MassA, PointMass* MassB){
+double* gravitationalForceOfAonB(PointMass* MassA, PointMass* MassB){    
+    //A vector of the difference petween the two positions
+    static double vector[] = {(MassA->getXValue() - MassB->getXValue()), (MassA->getYValue() - MassB->getYValue()), (MassA->getZValue() - MassB->getZValue())};
     
+    // Get the vector's magnitude
+    double vectorMagnitude = sqrt((vector[0]*vector[0]) + (vector[1]*vector[1]) + (vector[2]*vector[2]));
+    
+    // Normalized vector
+    vector[0] /= vectorMagnitude;
+    vector[1] /= vectorMagnitude;
+    vector[2] /= vectorMagnitude;
+
+    // Find the total gravitationalForce
+    double gravitationalForce = (6.673e-11)*MassA->getMass()*MassB->getMass()/(vectorMagnitude*vectorMagnitude);
+
+    // multiply unit vector by gravitational force
+    vector[0] *= gravitationalForce;
+    vector[1] *= gravitationalForce;
+    vector[2] *= gravitationalForce;
+
+    return vector;
 }
 
 int main(){
-    double deltaT = 1;
-    double endTime = 1000;
+    //Variables for the simulation
+    double deltaT = 86400; // in seconds
+    double endTime = 3.154e+7;
     int numberOfBodies = 3;
 
     PointMass headMass;
