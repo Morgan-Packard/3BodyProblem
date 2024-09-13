@@ -2,65 +2,15 @@
 #include <array>
 #include <string>
 #include <math.h>
+#include "DoubleyLinkedListNode.h"
+#include "PointMass.h"
 
 /*
 https://chatgpt.com/c/980c093b-84ca-4335-b7d0-bd6ad957c450
 interesting fixes, be sure to review later.
 */
 
-class DoublelyLinkedListNode {
-        DoublelyLinkedListNode *leftptr = nullptr, *rightptr = nullptr; // left
-    public:
-        void setLeftPtr (DoublelyLinkedListNode*);
-        void setRightPtr (DoublelyLinkedListNode*);
-        DoublelyLinkedListNode* getLeftPtr () {return leftptr;};
-        DoublelyLinkedListNode* getRightPtr () {return rightptr;};    
-};
 
-void DoublelyLinkedListNode::setLeftPtr (DoublelyLinkedListNode *inputPtr) {
-    leftptr = inputPtr;
-}
-
-void DoublelyLinkedListNode::setRightPtr (DoublelyLinkedListNode *inputPtr) {
-    rightptr = inputPtr;
-}
-
-class PointMass : public DoublelyLinkedListNode{
-        double pos_arr[3]; // x, y, z
-        double vel_arr[3]; // x, y, z
-        double force_arr[3]; // x, y, z
-        double mass;
-    public:
-        void setValues (double, double, double, double, double, double);
-        void setLeftPtr (PointMass*);
-        void setRightPtr (PointMass*);
-        double getXValue () {return pos_arr[0];};
-        double getYValue () {return pos_arr[1];};
-        double getZValue () {return pos_arr[2];};
-        double getVXValue () {return vel_arr[0];};
-        double getVYValue () {return vel_arr[1];};
-        double getVZValue () {return vel_arr[2];};
-        double getMass () {return mass;};
-        PointMass* getLeftPtr () {return (PointMass*) DoublelyLinkedListNode::getLeftPtr();}; //can cast data for doublylinkedlist pointer into a pointmass pointer
-        PointMass* getRightPtr () {return (PointMass*) DoublelyLinkedListNode::getRightPtr();}; 
-};
-
-void PointMass::setLeftPtr (PointMass *inputPtr) {
-    DoublelyLinkedListNode::setLeftPtr(inputPtr);
-}
-
-void PointMass::setRightPtr (PointMass *inputPtr) {
-    DoublelyLinkedListNode::setRightPtr(inputPtr);
-}
-
-void PointMass::setValues (double xin, double yin, double zin, double vxin, double vyin, double vzin) {
-    pos_arr[0] = xin;
-    pos_arr[1] = yin;
-    pos_arr[2] = zin;
-    vel_arr[0] = vxin;
-    vel_arr[1] = vyin;
-    vel_arr[2] = vzin;
-}
 
 double* gravitationalForceOfAonB(PointMass* MassA, PointMass* MassB){    
     //A vector of the difference petween the two positions
@@ -75,7 +25,7 @@ double* gravitationalForceOfAonB(PointMass* MassA, PointMass* MassB){
     vector[2] /= vectorMagnitude;
 
     // Find the total gravitationalForce
-    double gravitationalForce = (6.673e-11)*MassA->getMass()*MassB->getMass()/(vectorMagnitude*vectorMagnitude);
+    double gravitationalForce = (6.673e-11)*MassA->getMass()*MassB->getMass()/(vectorMagnitude*vectorMagnitude); //The mass of the object can be factored out
 
     // multiply unit vector by gravitational force
     vector[0] *= gravitationalForce;
@@ -111,8 +61,12 @@ int main(){
 
     for (trav = head; trav != tail->getLeftPtr(); trav = trav->getRightPtr()){
         for (PointMass* trav2; trav2 != tail; trav2 = trav2->getRightPtr()){
-            
+            trav->
         }
+    }
+
+    for (trav = head; trav != tail; trav = trav->getRightPtr()){
+
     }
 
     trav = head;
